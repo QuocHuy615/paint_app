@@ -235,7 +235,7 @@ class _PaintingScreenState extends State<PaintingScreen> {
 
             // Chọn độ dày
             const Text(
-              '📏 Độ Dày',
+              'Độ dày',
               style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
             ),
             const SizedBox(height: 10),
@@ -247,21 +247,13 @@ class _PaintingScreenState extends State<PaintingScreen> {
             ),
             const SizedBox(height: 16),
             const Text(
-              'To mau',
+              'Tô màu',
               style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
             ),
             const SizedBox(height: 8),
-            Row(
-              children: [
-                const Text('Bat to mau', style: TextStyle(fontSize: 12)),
-                const Spacer(),
-                Switch(
-                  value: _isFillEnabled,
-                  onChanged: (value) {
-                    setState(() => _isFillEnabled = value);
-                  },
-                ),
-              ],
+            Align(
+              alignment: Alignment.centerLeft,
+              child: _buildFillModeToggle(),
             ),
           ],
         ),
@@ -302,10 +294,6 @@ class _PaintingScreenState extends State<PaintingScreen> {
                         _shapeButton('▭', 'rectangle', 'Chữ nhật'),
                         const SizedBox(width: 4),
                         _shapeButton('⬜', 'square', 'Vuông'),
-                        const SizedBox(width: 4),
-                        _shapeButton('⬭', 'ellipse', 'Ellipse'),
-                        const SizedBox(width: 4),
-                        _shapeButton('▭', 'rectangle', 'Chữ nhật'),
                         const SizedBox(width: 4),
                         _shapeButton('⬭', 'ellipse', 'Ellipse'),
                       ],
@@ -383,7 +371,7 @@ class _PaintingScreenState extends State<PaintingScreen> {
             Row(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                const Text('dY"? ', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
+                const Text('Độ dày ', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
                 Expanded(
                   child: Slider(
                     min: 1,
@@ -405,19 +393,86 @@ class _PaintingScreenState extends State<PaintingScreen> {
               ],
             ),
             const SizedBox(height: 8),
-            Row(
-              children: [
-                const Text('To mau', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
-                const Spacer(),
-                Switch(
-                  value: _isFillEnabled,
-                  onChanged: (value) {
-                    setState(() => _isFillEnabled = value);
-                  },
-                ),
-              ],
+            Align(
+              alignment: Alignment.centerLeft,
+              child: _buildFillModeToggle(compact: true),
             ),
           ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildFillModeToggle({bool compact = false}) {
+    final isOn = _isFillEnabled;
+    final textColor = isOn ? Colors.white : Colors.grey[700]!;
+    final borderColor = isOn ? Colors.teal[700]! : Colors.grey[400]!;
+    final backgroundColor = isOn ? Colors.teal[400]! : Colors.grey[200]!;
+
+    return Tooltip(
+      message: isOn ? 'Tô màu' : 'Tô màu',
+      child: InkWell(
+        onTap: () => setState(() => _isFillEnabled = !_isFillEnabled),
+        borderRadius: BorderRadius.circular(14),
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 180),
+          padding: EdgeInsets.symmetric(
+            horizontal: compact ? 10 : 12,
+            vertical: compact ? 8 : 10,
+          ),
+          decoration: BoxDecoration(
+            color: backgroundColor,
+            borderRadius: BorderRadius.circular(14),
+            border: Border.all(color: borderColor, width: 1),
+            boxShadow: isOn
+                ? [
+                    BoxShadow(
+                      color: Colors.teal.withOpacity(0.35),
+                      blurRadius: 8,
+                      offset: const Offset(0, 4),
+                    ),
+                  ]
+                : null,
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(
+                Icons.format_color_fill,
+                size: compact ? 16 : 18,
+                color: textColor,
+              ),
+              const SizedBox(width: 8),
+              Text(
+                'Tô màu',
+                style: TextStyle(
+                  fontSize: compact ? 11 : 12,
+                  fontWeight: FontWeight.bold,
+                  color: textColor,
+                ),
+              ),
+              const SizedBox(width: 8),
+              Container(
+                padding: EdgeInsets.symmetric(
+                  horizontal: compact ? 6 : 8,
+                  vertical: compact ? 2 : 3,
+                ),
+                decoration: BoxDecoration(
+                  color: isOn ? Colors.white.withOpacity(0.2) : Colors.grey[300],
+                  borderRadius: BorderRadius.circular(999),
+                ),
+                child: Text(
+                  isOn ? 'BAT' : 'TAT',
+                  style: TextStyle(
+                    fontSize: compact ? 9 : 10,
+                    fontWeight: FontWeight.bold,
+                    color: textColor,
+                    letterSpacing: 0.6,
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -476,11 +531,11 @@ class _PaintingScreenState extends State<PaintingScreen> {
     return showDialog<String>(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('Luu ban ve'),
+        title: const Text('Lưu bản vẽ'),
         content: TextFormField(
           initialValue: nameValue,
           decoration: InputDecoration(
-            hintText: 'Nhap ten ban ve',
+            hintText: 'Nhập tên bản vẽ',
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(8),
             ),
@@ -492,20 +547,20 @@ class _PaintingScreenState extends State<PaintingScreen> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
-            child: const Text('Huy'),
+            child: const Text('Hủy'),
           ),
           ElevatedButton(
             onPressed: () {
               final name = nameValue.trim();
               if (name.isEmpty) {
                 ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Vui long nhap ten!')),
+                  const SnackBar(content: Text('Vui lòng nhập tên!')),
                 );
                 return;
               }
               Navigator.pop(ctx, name);
             },
-            child: const Text('Luu'),
+            child: const Text('Lưu'),
           ),
         ],
       ),
@@ -517,20 +572,20 @@ class _PaintingScreenState extends State<PaintingScreen> {
     return showDialog<_NewDrawingDecision>(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('Tao ban ve moi'),
-        content: const Text('Ban co muon luu ban ve hien tai khong?'),
+        title: const Text('Tạo bản vẽ mới'),
+        content: const Text('Bạn có muốn lưu bản vẽ hiện tại không?'),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx, _NewDrawingDecision.cancel),
-            child: const Text('Huy'),
+            child: const Text('Hủy'),
           ),
           TextButton(
             onPressed: () => Navigator.pop(ctx, _NewDrawingDecision.discard),
-            child: const Text('Khong luu'),
+            child: const Text('Không lưu'),
           ),
           ElevatedButton(
             onPressed: () => Navigator.pop(ctx, _NewDrawingDecision.save),
-            child: const Text('Luu va tao moi'),
+            child: const Text('Lưu và tạo mới'),
           ),
         ],
       ),
@@ -553,7 +608,7 @@ class _PaintingScreenState extends State<PaintingScreen> {
       _resetDrawingState();
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Da tao ban ve moi')),
+          const SnackBar(content: Text('Đã tạo bản vẽ mới')),
         );
       }
       return;
@@ -569,7 +624,7 @@ class _PaintingScreenState extends State<PaintingScreen> {
       _resetDrawingState();
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Da cap nhat va tao ban ve moi')),
+          const SnackBar(content: Text('Đã cập nhật và tạo bản vẽ mới')),
         );
       }
       return;
@@ -578,12 +633,12 @@ class _PaintingScreenState extends State<PaintingScreen> {
     final decision = await _confirmSaveBeforeNewDrawing();
     if (decision == null || decision == _NewDrawingDecision.cancel) return;
 
-    var snackMessage = 'Da tao ban ve moi';
+    var snackMessage = 'Da tạo bản vẽ mới';
     if (decision == _NewDrawingDecision.save) {
       final name = await _promptForDrawingName(initialName: _currentDrawingName);
       if (name == null || name.trim().isEmpty) return;
       await _fileService.saveDrawing(_shapes, name);
-      snackMessage = 'Da luu va tao ban ve moi';
+      snackMessage = 'Đã lưu và tạo bản vẽ mới';
     }
 
     if (!mounted) return;
@@ -612,7 +667,7 @@ class _PaintingScreenState extends State<PaintingScreen> {
     setState(() => _currentDrawingName = name);
     if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Da luu: $name')),
+        SnackBar(content: Text('Đã lưu: $name')),
       );
     }
   }
@@ -626,7 +681,7 @@ class _PaintingScreenState extends State<PaintingScreen> {
     if (filepath.isNotEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('✅ PNG: $filepath'),
+          content: Text('PNG: $filepath'),
           duration: const Duration(seconds: 3),
         ),
       );
@@ -642,7 +697,7 @@ class _PaintingScreenState extends State<PaintingScreen> {
     if (filepath.isNotEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('✅ JPG: $filepath'),
+          content: Text('JPG: $filepath'),
           duration: const Duration(seconds: 3),
         ),
       );
@@ -677,7 +732,7 @@ class _PaintingScreenState extends State<PaintingScreen> {
           _currentDrawingName = selectedName;
         });
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Da tai: $selectedName')),
+          SnackBar(content: Text('Đã tải: $selectedName')),
         );
       }
     }
