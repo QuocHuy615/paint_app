@@ -32,6 +32,15 @@ class Square extends Shape {
   }
 
   @override
+  bool contains(Offset point) {
+    final rect = Rect.fromLTWH(topLeft.dx, topLeft.dy, side, side);
+    return rect.contains(point);
+  }
+
+  @override
+  bool get canFill => true;
+
+  @override
   Map<String, dynamic> toJson() => {
     'type': 'square',
     'topLeftX': topLeft.dx,

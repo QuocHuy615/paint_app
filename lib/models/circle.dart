@@ -29,6 +29,16 @@ class Circle extends Shape {
   }
 
   @override
+  bool contains(Offset point) {
+    final dx = point.dx - center.dx;
+    final dy = point.dy - center.dy;
+    return (dx * dx + dy * dy) <= radius * radius;
+  }
+
+  @override
+  bool get canFill => true;
+
+  @override
   Map<String, dynamic> toJson() => {
     'type': 'circle',
     'centerX': center.dx,

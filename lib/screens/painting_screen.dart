@@ -20,6 +20,7 @@ class _PaintingScreenState extends State<PaintingScreen> {
   String _selectedShape = 'line';
   Color _selectedColor = Colors.black;
   double _strokeWidth = 2.0;
+  bool _isFillEnabled = false;
   List<Shape> _shapes = [];
   String? _currentDrawingName;
   
@@ -152,6 +153,7 @@ class _PaintingScreenState extends State<PaintingScreen> {
                     selectedShape: _selectedShape,
                     selectedColor: _selectedColor,
                     strokeWidth: _strokeWidth,
+                    isFillEnabled: _isFillEnabled,
                     onShapesChanged: (shapes) => _shapes = shapes,
                     repaintBoundaryKey: _repaintKey,
                   ),
@@ -169,6 +171,7 @@ class _PaintingScreenState extends State<PaintingScreen> {
                     selectedShape: _selectedShape,
                     selectedColor: _selectedColor,
                     strokeWidth: _strokeWidth,
+                    isFillEnabled: _isFillEnabled,
                     onShapesChanged: (shapes) => _shapes = shapes,
                     repaintBoundaryKey: _repaintKey,
                   ),
@@ -242,6 +245,24 @@ class _PaintingScreenState extends State<PaintingScreen> {
                 setState(() => _strokeWidth = size);
               },
             ),
+            const SizedBox(height: 16),
+            const Text(
+              'To mau',
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+            ),
+            const SizedBox(height: 8),
+            Row(
+              children: [
+                const Text('Bat to mau', style: TextStyle(fontSize: 12)),
+                const Spacer(),
+                Switch(
+                  value: _isFillEnabled,
+                  onChanged: (value) {
+                    setState(() => _isFillEnabled = value);
+                  },
+                ),
+              ],
+            ),
           ],
         ),
       ),
@@ -250,7 +271,7 @@ class _PaintingScreenState extends State<PaintingScreen> {
 
   Widget _buildBottomToolbar() {
     return Container(
-      constraints: const BoxConstraints(maxHeight: 130),
+      constraints: const BoxConstraints(maxHeight: 170),
       decoration: BoxDecoration(
         color: const Color.fromRGBO(250, 250, 250, 1),
         border: Border(
@@ -358,11 +379,11 @@ class _PaintingScreenState extends State<PaintingScreen> {
             ),
             const SizedBox(height: 8),
 
-            // Hàng 3: Độ dày
+            // Hang 3: Do day
             Row(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                const Text('📏 ', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
+                const Text('dY"? ', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
                 Expanded(
                   child: Slider(
                     min: 1,
@@ -380,6 +401,19 @@ class _PaintingScreenState extends State<PaintingScreen> {
                     style: const TextStyle(fontSize: 11, fontWeight: FontWeight.bold),
                     textAlign: TextAlign.right,
                   ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 8),
+            Row(
+              children: [
+                const Text('To mau', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
+                const Spacer(),
+                Switch(
+                  value: _isFillEnabled,
+                  onChanged: (value) {
+                    setState(() => _isFillEnabled = value);
+                  },
                 ),
               ],
             ),

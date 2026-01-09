@@ -22,6 +22,11 @@ class Point extends Shape {
   }
 
   @override
+  bool contains(Offset point) {
+    return false;
+  }
+
+  @override
   Map<String, dynamic> toJson() => {
     'type': 'point',
     'x': position.dx,

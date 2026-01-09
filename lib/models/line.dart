@@ -22,6 +22,11 @@ class Line extends Shape {
     
     canvas.drawLine(startPoint, endPoint, paint);
   }
+
+  @override
+  bool contains(Offset point) {
+    return false;
+  }
   
   @override
   Map<String, dynamic> toJson() => {

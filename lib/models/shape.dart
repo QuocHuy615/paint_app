@@ -15,6 +15,8 @@ abstract class Shape {
   });
   
   void draw(Canvas canvas, Size size);
+  bool contains(Offset point);
+  bool get canFill => false;
   Map<String, dynamic> toJson();
   static Shape? fromJson(Map<String, dynamic> json) => null;
 }

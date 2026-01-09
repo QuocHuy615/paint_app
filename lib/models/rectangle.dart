@@ -32,6 +32,15 @@ class Rectangle extends Shape {
   }
 
   @override
+  bool contains(Offset point) {
+    final rect = Rect.fromPoints(topLeft, bottomRight);
+    return rect.contains(point);
+  }
+
+  @override
+  bool get canFill => true;
+
+  @override
   Map<String, dynamic> toJson() => {
     'type': 'rectangle',
     'topLeftX': topLeft.dx,

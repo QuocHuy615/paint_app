@@ -38,6 +38,17 @@ class Ellipse extends Shape {
   }
 
   @override
+  bool contains(Offset point) {
+    if (radiusX == 0 || radiusY == 0) return false;
+    final dx = (point.dx - center.dx) / radiusX;
+    final dy = (point.dy - center.dy) / radiusY;
+    return (dx * dx + dy * dy) <= 1;
+  }
+
+  @override
+  bool get canFill => true;
+
+  @override
   Map<String, dynamic> toJson() => {
     'type': 'ellipse',
     'centerX': center.dx,
