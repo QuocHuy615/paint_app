@@ -1,5 +1,6 @@
 // lib/screens/painting_screen.dart
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import '../widgets/canvas_widget.dart';
 import '../widgets/color_picker.dart';
 import '../widgets/size_picker.dart';
@@ -209,12 +210,12 @@ class _PaintingScreenState extends State<PaintingScreen> {
               spacing: 6,
               runSpacing: 6,
               children: [
-                _shapeButton('●', 'point', 'Điểm'),
-                _shapeButton('📏', 'line', 'Đường'),
-                _shapeButton('⭕', 'circle', 'Tròn'),
-                _shapeButton('▭', 'rectangle', 'Chữ nhật'),
-                _shapeButton('⬜', 'square', 'Vuông'),
-                _shapeButton('⬭', 'ellipse', 'Ellipse'),
+                _shapeButton('point', 'point', 'Điểm'),
+                _shapeButton('line', 'line', 'Đường'),
+                _shapeButton('circle', 'circle', 'Tròn'),
+                _shapeButton('rectangle', 'rectangle', 'Chữ nhật'),
+                _shapeButton('square', 'square', 'Vuông'),
+                _shapeButton('ellipse', 'ellipse', 'Ellipse'),
               ],
             ),
             const SizedBox(height: 16),
@@ -279,23 +280,22 @@ class _PaintingScreenState extends State<PaintingScreen> {
             Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text('✏️ ', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
                 Expanded(
                   child: SingleChildScrollView(
                     scrollDirection: Axis.horizontal,
                     child: Row(
                       children: [
-                        _shapeButton('●', 'point', 'Điểm'),
+                        _shapeButton('point', 'point', 'Điểm'),
                         const SizedBox(width: 4),
-                        _shapeButton('📏', 'line', 'Đường'),
+                        _shapeButton('line', 'line', 'Đường'),
                         const SizedBox(width: 4),
-                        _shapeButton('⭕', 'circle', 'Tròn'),
+                        _shapeButton('circle', 'circle', 'Tròn'),
                         const SizedBox(width: 4),
-                        _shapeButton('▭', 'rectangle', 'Chữ nhật'),
+                        _shapeButton('rectangle', 'rectangle', 'Chữ nhật'),
                         const SizedBox(width: 4),
-                        _shapeButton('⬜', 'square', 'Vuông'),
+                        _shapeButton('square', 'square', 'Vuông'),
                         const SizedBox(width: 4),
-                        _shapeButton('⬭', 'ellipse', 'Ellipse'),
+                        _shapeButton('ellipse', 'ellipse', 'Ellipse'),
                       ],
                     ),
                   ),
@@ -461,15 +461,6 @@ class _PaintingScreenState extends State<PaintingScreen> {
                   color: isOn ? Colors.white.withOpacity(0.2) : Colors.grey[300],
                   borderRadius: BorderRadius.circular(999),
                 ),
-                child: Text(
-                  isOn ? 'BAT' : 'TAT',
-                  style: TextStyle(
-                    fontSize: compact ? 9 : 10,
-                    fontWeight: FontWeight.bold,
-                    color: textColor,
-                    letterSpacing: 0.6,
-                  ),
-                ),
               ),
             ],
           ),
@@ -478,8 +469,9 @@ class _PaintingScreenState extends State<PaintingScreen> {
     );
   }
   
-  Widget _shapeButton(String icon, String shape, String label) {
+  Widget _shapeButton(String iconAsset, String shape, String label) {
     final isSelected = _selectedShape == shape;
+    final iconColor = isSelected ? Colors.white : Colors.grey[700]!;
     return Tooltip(
       message: label,
       child: GestureDetector(
@@ -501,7 +493,12 @@ class _PaintingScreenState extends State<PaintingScreen> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Text(icon, style: const TextStyle(fontSize: 24)),
+              SvgPicture.asset(
+                'assets/icons/$iconAsset.svg',
+                width: 22,
+                height: 22,
+                colorFilter: ColorFilter.mode(iconColor, BlendMode.srcIn),
+              ),
               const SizedBox(height: 3),
               Text(
                 label,
@@ -732,7 +729,7 @@ class _PaintingScreenState extends State<PaintingScreen> {
           _currentDrawingName = selectedName;
         });
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Đã tải: $selectedName')),
+          SnackBar(content: Text(selectedName)),
         );
       }
     }

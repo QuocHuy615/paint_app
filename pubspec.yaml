@@ -36,6 +36,7 @@ dependencies:
   cupertino_icons: ^1.0.8
   path_provider: ^2.1.0
   image: ^4.0.17
+  flutter_svg: ^2.0.10
 
 dev_dependencies:
   flutter_test:
@@ -58,6 +59,14 @@ flutter:
   # included with your application, so that you can use the icons in
   # the material Icons class.
   uses-material-design: true
+
+  assets:
+    - assets/icons/point.svg
+    - assets/icons/line.svg
+    - assets/icons/circle.svg
+    - assets/icons/rectangle.svg
+    - assets/icons/square.svg
+    - assets/icons/ellipse.svg
 
   # To add assets to your application, add an assets section, like this:
   # assets:
