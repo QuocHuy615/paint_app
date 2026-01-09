@@ -20,11 +20,11 @@ class ImageExportService {
         if (!await paintAppDir.exists()) {
           await paintAppDir.create(recursive: true);
         }
-        print('📂 External storage path: ${paintAppDir.path}');
+        print('External storage path: ${paintAppDir.path}');
         return paintAppDir.path;
       }
     } catch (e) {
-      print('⚠️ External storage not available: $e');
+      print('External storage not available: $e');
     }
     
     // Fallback: dùng app documents
@@ -33,7 +33,7 @@ class ImageExportService {
     if (!await paintAppDir.exists()) {
       await paintAppDir.create(recursive: true);
     }
-    print('📂 App documents path: ${paintAppDir.path}');
+    print('App documents path: ${paintAppDir.path}');
     return paintAppDir.path;
   }
 
@@ -81,10 +81,10 @@ class ImageExportService {
         await jpgFile.writeAsBytes(encodedBytes);
       }
 
-      print('✅ Ảnh đã lưu: $filepath');
+      print('Ảnh đã lưu: $filepath');
       return filepath;
     } catch (e) {
-      print('❌ Lỗi: $e');
+      print('Lỗi: $e');
       return '';
     }
   }

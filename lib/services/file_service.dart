@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'dart:convert';
 import 'package:path_provider/path_provider.dart';
+import 'package:path/path.dart' as p;
 import '../models/shape.dart';
 
 class FileService {
@@ -34,7 +35,7 @@ class FileService {
   Future<String> saveDrawing(List<Shape> shapes, String drawingName) async {
     final path = await _localPath;
     final filename = '$drawingName.json';
-    final file = File('$path/$filename');
+    final file = File(p.join(path, filename));
     
     final data = shapes.map((s) => s.toJson()).toList();
     await file.writeAsString(jsonEncode(data));
@@ -46,7 +47,7 @@ class FileService {
   Future<bool> drawingExists(String drawingName) async {
     try {
       final path = await _localPath;
-      final file = File('$path/$drawingName.json');
+      final file = File(p.join(path, '$drawingName.json'));
       return await file.exists();
     } catch (e) {
       print('Error checking drawing: $e');
@@ -67,7 +68,7 @@ class FileService {
       
       for (var file in files) {
         if (file is File && file.path.endsWith('.json')) {
-          final name = file.path.split('/').last.replaceAll('.json', '');
+          final name = p.basenameWithoutExtension(file.path);
           final stat = await file.stat();
           
           drawings.add(DrawingInfo(
@@ -92,7 +93,7 @@ class FileService {
   Future<List<Map<String, dynamic>>> loadDrawing(String drawingName) async {
     try {
       final path = await _localPath;
-      final file = File('$path/$drawingName.json');
+      final file = File(p.join(path, '$drawingName.json'));
       
       if (!await file.exists()) return [];
 
@@ -109,7 +110,7 @@ class FileService {
   Future<bool> deleteDrawing(String drawingName) async {
     try {
       final path = await _localPath;
-      final file = File('$path/$drawingName.json');
+      final file = File(p.join(path, '$drawingName.json'));
       
       if (await file.exists()) {
         await file.delete();

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import '../services/file_service.dart';
 
 class GalleryScreen extends StatefulWidget {
@@ -26,11 +27,21 @@ class _GalleryScreenState extends State<GalleryScreen> {
     });
   }
 
+
+  Widget _svgIcon(String name, {double size = 20, Color? color}) {
+    return SvgPicture.asset(
+      'assets/icons/$name.svg',
+      width: size,
+      height: size,
+      colorFilter: ColorFilter.mode(color ?? Colors.black87, BlendMode.srcIn),
+    );
+  }
+
   void _deleteDrawing(String drawingName) {
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('❌ Xóa bản vẽ'),
+        title: const Text('Xóa bản vẽ'),
         content: Text('Bạn chắc chắn muốn xóa "$drawingName"?'),
         actions: [
           TextButton(
@@ -45,7 +56,7 @@ class _GalleryScreenState extends State<GalleryScreen> {
               
               if (mounted) {
                 ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text('✅ Đã xóa "$drawingName"')),
+                  SnackBar(content: Text('Đã xóa "$drawingName"')),
                 );
               }
             },
@@ -58,6 +69,8 @@ class _GalleryScreenState extends State<GalleryScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final accent = Theme.of(context).colorScheme.primary;
+    final muted = Colors.grey[700]!;
     return Scaffold(
       appBar: AppBar(
         title: const Text('📚 Thư Viện Bản Vẽ'),
@@ -66,7 +79,7 @@ class _GalleryScreenState extends State<GalleryScreen> {
         actions: [
           IconButton(
             tooltip: 'Tao ban ve moi',
-            icon: const Icon(Icons.note_add),
+            icon: _svgIcon('add', size: 20, color: accent),
             onPressed: () {
               Navigator.pop(context, GalleryScreen.newDrawingToken);
             },
@@ -94,7 +107,7 @@ class _GalleryScreenState extends State<GalleryScreen> {
                     onPressed: () {
                       Navigator.pop(context, GalleryScreen.newDrawingToken);
                     },
-                    icon: const Icon(Icons.create),
+                    icon: _svgIcon('add', size: 18, color: Colors.white),
                     label: const Text('Tạo bản vẽ mới'),
                   ),
                 ],
@@ -111,7 +124,7 @@ class _GalleryScreenState extends State<GalleryScreen> {
               return Card(
                 margin: const EdgeInsets.symmetric(vertical: 8),
                 child: ListTile(
-                  leading: const Icon(Icons.image, size: 40, color: Colors.blue),
+                  leading: _svgIcon('image', size: 36, color: Colors.blue),
                   title: Text(
                     drawing.name,
                     style: const TextStyle(fontWeight: FontWeight.bold),
@@ -122,20 +135,20 @@ class _GalleryScreenState extends State<GalleryScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       const SizedBox(height: 4),
-                      Text('📅 ${drawing.formattedDate}'),
-                      Text('📦 ${drawing.formattedSize}'),
+                      Text(drawing.formattedDate),
+                      Text(drawing.formattedSize),
                     ],
                   ),
                   trailing: PopupMenuButton(
                     itemBuilder: (ctx) => [
                       PopupMenuItem(
-                        child: const Text('📂 Mở'),
+                        child: const Text('Mở'),
                         onTap: () {
                           Navigator.pop(context, drawing.name);
                         },
                       ),
                       PopupMenuItem(
-                        child: const Text('❌ Xóa', style: TextStyle(color: Colors.red)),
+                        child: const Text('Xóa', style: TextStyle(color: Colors.red)),
                         onTap: () {
                           Future.delayed(
                             const Duration(milliseconds: 100),

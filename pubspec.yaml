@@ -37,6 +37,7 @@ dependencies:
   path_provider: ^2.1.0
   image: ^4.0.17
   flutter_svg: ^2.0.10
+  path: ^1.9.0
 
 dev_dependencies:
   flutter_test:
@@ -67,6 +68,11 @@ flutter:
     - assets/icons/rectangle.svg
     - assets/icons/square.svg
     - assets/icons/ellipse.svg
+    - assets/icons/add.svg
+    - assets/icons/image.svg
+    - assets/icons/more.svg
+    - assets/icons/open.svg
+    - assets/icons/trash.svg
 
   # To add assets to your application, add an assets section, like this:
   # assets:

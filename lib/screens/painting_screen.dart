@@ -48,20 +48,14 @@ class _PaintingScreenState extends State<PaintingScreen> {
             child: IconButton(
               icon: const Icon(Icons.note_add),
               onPressed: _createNewDrawing,
-              style: IconButton.styleFrom(
-                backgroundColor: Colors.teal.withOpacity(0.1),
-              ),
             ),
           ),
           const SizedBox(width: 8),
           Tooltip(
             message: 'Lưu bản vẽ dạng JSON',
             child: IconButton(
-              icon: const Icon(Icons.save_alt),
+              icon: const Icon(Icons.save),
               onPressed: _saveDrawing,
-              style: IconButton.styleFrom(
-                backgroundColor: Colors.blue.withOpacity(0.1),
-              ),
             ),
           ),
           const SizedBox(width: 8),
@@ -70,9 +64,6 @@ class _PaintingScreenState extends State<PaintingScreen> {
             child: IconButton(
               icon: const Icon(Icons.image),
               onPressed: _exportImage,
-              style: IconButton.styleFrom(
-                backgroundColor: Colors.green.withOpacity(0.1),
-              ),
             ),
           ),
           const SizedBox(width: 8),
@@ -110,9 +101,6 @@ class _PaintingScreenState extends State<PaintingScreen> {
             child: IconButton(
               icon: const Icon(Icons.undo),
               onPressed: _undo,
-              style: IconButton.styleFrom(
-                backgroundColor: Colors.amber.withOpacity(0.1),
-              ),
             ),
           ),
           const SizedBox(width: 8),
@@ -121,9 +109,6 @@ class _PaintingScreenState extends State<PaintingScreen> {
             child: IconButton(
               icon: const Icon(Icons.delete_outline),
               onPressed: _clearAll,
-              style: IconButton.styleFrom(
-                backgroundColor: Colors.red.withOpacity(0.1),
-              ),
             ),
           ),
           const SizedBox(width: 8),
@@ -132,9 +117,6 @@ class _PaintingScreenState extends State<PaintingScreen> {
             child: IconButton(
               icon: const Icon(Icons.library_books),
               onPressed: _openGallery,
-              style: IconButton.styleFrom(
-                backgroundColor: Colors.purple.withOpacity(0.1),
-              ),
             ),
           ),
           const SizedBox(width: 8),
@@ -678,7 +660,7 @@ class _PaintingScreenState extends State<PaintingScreen> {
     if (filepath.isNotEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('PNG: $filepath'),
+          content: Text('Xuất bản vẽ thành công'),
           duration: const Duration(seconds: 3),
         ),
       );
@@ -694,7 +676,7 @@ class _PaintingScreenState extends State<PaintingScreen> {
     if (filepath.isNotEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('JPG: $filepath'),
+          content: Text('Xuất bản vẽ thành công'),
           duration: const Duration(seconds: 3),
         ),
       );
