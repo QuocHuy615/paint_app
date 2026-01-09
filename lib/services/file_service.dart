@@ -43,6 +43,17 @@ class FileService {
     return file.path;
   }
 
+  Future<bool> drawingExists(String drawingName) async {
+    try {
+      final path = await _localPath;
+      final file = File('$path/$drawingName.json');
+      return await file.exists();
+    } catch (e) {
+      print('Error checking drawing: $e');
+      return false;
+    }
+  }
+
   // Lấy danh sách tất cả bản vẽ đã lưu
   Future<List<DrawingInfo>> getDrawingsList() async {
     try {

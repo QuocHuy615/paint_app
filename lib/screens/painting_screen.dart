@@ -9,6 +9,8 @@ import '../services/file_service.dart';
 import '../services/image_export_service.dart';
 import './gallery_screen.dart';
 
+enum _NewDrawingDecision { save, discard, cancel }
+
 class PaintingScreen extends StatefulWidget {
   @override
   State<PaintingScreen> createState() => _PaintingScreenState();
@@ -426,6 +428,81 @@ class _PaintingScreenState extends State<PaintingScreen> {
       ),
     );
   }
+
+  Future<bool> _isCurrentDrawingInLibrary() async {
+    final name = _currentDrawingName?.trim();
+    if (name == null || name.isEmpty) return false;
+    return _fileService.drawingExists(name);
+  }
+
+
+  Future<String?> _promptForDrawingName({String? initialName}) async {
+    if (!mounted) return null;
+    var nameValue = (initialName ?? '').trim();
+    return showDialog<String>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Luu ban ve'),
+        content: TextFormField(
+          initialValue: nameValue,
+          decoration: InputDecoration(
+            hintText: 'Nhap ten ban ve',
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(8),
+            ),
+            prefixIcon: const Icon(Icons.title),
+          ),
+          autofocus: true,
+          onChanged: (value) => nameValue = value,
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: const Text('Huy'),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              final name = nameValue.trim();
+              if (name.isEmpty) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('Vui long nhap ten!')),
+                );
+                return;
+              }
+              Navigator.pop(ctx, name);
+            },
+            child: const Text('Luu'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<_NewDrawingDecision?> _confirmSaveBeforeNewDrawing() async {
+    if (!mounted) return null;
+    return showDialog<_NewDrawingDecision>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Tao ban ve moi'),
+        content: const Text('Ban co muon luu ban ve hien tai khong?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, _NewDrawingDecision.cancel),
+            child: const Text('Huy'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, _NewDrawingDecision.discard),
+            child: const Text('Khong luu'),
+          ),
+          ElevatedButton(
+            onPressed: () => Navigator.pop(ctx, _NewDrawingDecision.save),
+            child: const Text('Luu va tao moi'),
+          ),
+        ],
+      ),
+    );
+  }
+
   void _resetDrawingState() {
     if (!mounted) return;
     (_canvasKey.currentState as dynamic)?.clearAll();
@@ -448,32 +525,39 @@ class _PaintingScreenState extends State<PaintingScreen> {
       return;
     }
 
-    final shouldClear = await showDialog<bool>(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        title: const Text('Tao ban ve moi'),
-        content: const Text('Ban ve hien tai se bi xoa. Tiep tuc?'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx, false),
-            child: const Text('Huy'),
-          ),
-          ElevatedButton(
-            onPressed: () => Navigator.pop(ctx, true),
-            child: const Text('Tao moi'),
-          ),
-        ],
-      ),
-    );
-
-    if (shouldClear == true) {
+    final isInLibrary = await _isCurrentDrawingInLibrary();
+    if (isInLibrary) {
+      final name = _currentDrawingName?.trim();
+      if (name != null && name.isNotEmpty) {
+        await _fileService.saveDrawing(_shapes, name);
+      }
       if (!mounted) return;
       _resetDrawingState();
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Da tao ban ve moi')),
+          const SnackBar(content: Text('Da cap nhat va tao ban ve moi')),
         );
       }
+      return;
+    }
+
+    final decision = await _confirmSaveBeforeNewDrawing();
+    if (decision == null || decision == _NewDrawingDecision.cancel) return;
+
+    var snackMessage = 'Da tao ban ve moi';
+    if (decision == _NewDrawingDecision.save) {
+      final name = await _promptForDrawingName(initialName: _currentDrawingName);
+      if (name == null || name.trim().isEmpty) return;
+      await _fileService.saveDrawing(_shapes, name);
+      snackMessage = 'Da luu va tao ban ve moi';
+    }
+
+    if (!mounted) return;
+    _resetDrawingState();
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(snackMessage)),
+      );
     }
   }
 
@@ -486,57 +570,19 @@ class _PaintingScreenState extends State<PaintingScreen> {
   }
   
   void _saveDrawing() async {
-    final nameController = TextEditingController();
-    
     if (!mounted) return;
-    
-    showDialog(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        title: const Text('💾 Lưu bản vẽ'),
-        content: TextField(
-          controller: nameController,
-          decoration: InputDecoration(
-            hintText: 'Nhập tên bản vẽ',
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(8),
-            ),
-            prefixIcon: const Icon(Icons.title),
-          ),
-          autofocus: true,
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx),
-            child: const Text('Hủy'),
-          ),
-          ElevatedButton(
-            onPressed: () async {
-              final name = nameController.text.trim();
-              if (name.isEmpty) {
-                ScaffoldMessenger.of(ctx).showSnackBar(
-                  const SnackBar(content: Text('❌ Vui lòng nhập tên!')),
-                );
-                return;
-              }
-              
-              await _fileService.saveDrawing(_shapes, name);
-              setState(() => _currentDrawingName = name);
-              
-              Navigator.pop(ctx);
-              if (mounted) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text('✅ Đã lưu: $name')),
-                );
-              }
-            },
-            child: const Text('Lưu'),
-          ),
-        ],
-      ),
-    );
+    final name = await _promptForDrawingName(initialName: _currentDrawingName);
+    if (name == null || name.trim().isEmpty) return;
+    await _fileService.saveDrawing(_shapes, name);
+    if (!mounted) return;
+    setState(() => _currentDrawingName = name);
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Da luu: $name')),
+      );
+    }
   }
-  
+
   void _exportImage() async {
     final filepath = await _imageService.exportAsImage(
       _repaintKey,
