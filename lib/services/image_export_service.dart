@@ -1,6 +1,7 @@
 // lib/services/image_export_service.dart
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:flutter/services.dart';
 import 'dart:ui' as ui;
 import 'package:image/image.dart' as img;
 import 'dart:typed_data';
@@ -8,6 +9,8 @@ import 'dart:io';
 import 'package:path_provider/path_provider.dart';
 
 class ImageExportService {
+  static const MethodChannel _channel = MethodChannel('paint_app/downloads');
+
   Future<String> get _exportPath async {
     try {
       // Lấy external storage directory (nơi ứng dụng có thể lưu file công khai)
@@ -48,15 +51,34 @@ class ImageExportService {
       final pngBytes = byteData!.buffer.asUint8List();
       final img.Image decodedImage = img.decodeImage(pngBytes)!;
 
+
+      final isPng = format == 'png';
+      final encodedBytes = isPng
+          ? img.encodePng(decodedImage)
+          : img.encodeJpg(decodedImage);
+
+      if (Platform.isAndroid) {
+        final savedPath = await _channel.invokeMethod<String>(
+          'saveToDownloads',
+          {
+            'filename': filename,
+            'bytes': Uint8List.fromList(encodedBytes),
+            'mimeType': isPng ? 'image/png' : 'image/jpeg',
+            'subDir': 'PaintApp',
+          },
+        );
+        return savedPath ?? '';
+      }
+
       final exportDir = await _exportPath;
       final filepath = '$exportDir/$filename';
 
-      if (format == 'png') {
+      if (isPng) {
         final pngFile = File(filepath);
-        await pngFile.writeAsBytes(img.encodePng(decodedImage));
-      } else if (format == 'jpg' || format == 'jpeg') {
+        await pngFile.writeAsBytes(encodedBytes);
+      } else {
         final jpgFile = File(filepath);
-        await jpgFile.writeAsBytes(img.encodeJpg(decodedImage));
+        await jpgFile.writeAsBytes(encodedBytes);
       }
 
       print('✅ Ảnh đã lưu: $filepath');
